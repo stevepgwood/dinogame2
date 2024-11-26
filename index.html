@@ -54,7 +54,34 @@
     <p>(Tap the screen on mobile)</p>
   </div>
   <p id="score">Score: 0</p>
-  <canvas id="gameCanvas" width="800" height="200"></canvas>
+ <canvas id="gameCanvas"></canvas>
+<script>
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // Maintain aspect ratio (4:1 for your game)
+  const aspectRatio = 4;
+
+  function resizeCanvas() {
+    const width = Math.min(window.innerWidth, 800); // Limit max width to 800px
+    const height = width / aspectRatio; // Maintain aspect ratio
+
+    canvas.width = width;
+    canvas.height = height;
+
+    // Optional: Adjust game element sizes proportionally
+    dino.width = canvas.width / 20; // Scale dino width (adjust as needed)
+    dino.height = canvas.height / 6; // Scale dino height (adjust as needed)
+    gameSpeed = canvas.width / 160; // Scale game speed proportionally
+  }
+
+  // Initial resize and event listener
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
+  // Your game logic continues below...
+</script>
+
 
   <audio id="backgroundMusic" src="background-music.mp3" preload="auto" loop></audio>
   <audio id="jumpSound" src="jump.mp3" preload="auto"></audio>
