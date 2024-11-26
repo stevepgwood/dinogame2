@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dino Jump Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      background-color: #FFFFFF;
+      transition: background-color 0.1s; /* Smooth transition for static colors */
+    }
+    canvas {
+      display: block;
+      margin: 20px auto;
+      background: #FFFFFF;
+      border: 1px solid #ccc;
+      transition: background-color 0.1s; /* Smooth transition for static colors */
+    }
+    h1, #score {
+      margin: 10px 0;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 24px;
+      z-index: 1;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="titleScreen" class="overlay">
+    <p>Press Spacebar to Start</p>
+    <p>(Tap the screen on mobile)</p>
+  </div>
+  <div id="gameOverScreen" class="overlay hidden">
+    <p>Game Over!</p>
+    <p>Your final score: <span id="finalScore">0</span></p>
+    <p>Press Spacebar to Restart</p>
+    <p>(Tap the screen on mobile)</p>
+  </div>
+  <p id="score">Score: 0</p>
+  <canvas id="gameCanvas" width="800" height="200"></canvas>
+
+  <audio id="backgroundMusic" src="background-music.mp3" preload="auto" loop></audio>
+  <audio id="jumpSound" src="jump.mp3" preload="auto"></audio>
+  <audio id="deathSound" src="death.mp3" preload="auto"></audio>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const gravity = 0.5; // Gravity for the dino
+    const dino = {
+      x: 50,
+      y: 150,
+      width: 40,
+      height: 40,
+      dy: 0,
+      jumping: false,
+    };
+
+    const obstacles = [];
+    let gameSpeed = 5;
+    let score = 0;
+    let isGameOver = false;
+    let isGameStarted = false;
+    let obstacleSpawnInterval;
+    let elapsedTime = 0; // Timer for tracking gameplay duration
+
+    // Pool of bright colors for the background
+    const brightColors = [
+      "#FF5733", // Bright red
+      "#FF8D1A", // Bright orange
+      "#FFD700", // Yellow
+      "#33FF57", // Bright green
+      "#33FFF5", // Cyan
+      "#1A8DFF", // Bright blue
+      "#FFC0CB", // Pink
+    ];
+
+    // Load images
+    const dinoImg = new Image();
+    dinoImg.src = "dino.png";
+
+    const obstacleImages = [
+      "cactus1.png", // Medium cactus
+      "cactus2.png", // Large cactus
+      "cactus3.png", // Huge cactus
+      "cactus4.png", // Massive wall
+    ].map((src) => {
+      const img = new Image();
+      img.src = src;
+      return img;
+    });
+
+    // Harder obstacles
+    const obstacleTypes = [
+      { width: 40, height: 40, weight: 40 }, // Medium cactus
+      { width: 50, height: 50, weight: 30 }, // Large cactus
+      { width: 60, height: 60, weight: 20 }, // Huge cactus
+      { width: 80, height: 80, weight: 10 }, // Massive wall
+    ];
+
+    // Audio elements
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const jumpSound = document.getElementById("jumpSound");
+    const deathSound = document.getElementById("deathSound");
+
+    // Get overlay elements
+    const titleScreen = document.getElementById("titleScreen");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    const finalScore = document.getElementById("finalScore");
+
+    let strobeInterval; // For controlling strobe effect
+
+    function resetGame() {
+      obstacles.length = 0;
+      gameSpeed = 5;
+      score = 0;
+      elapsedTime = 0; // Reset elapsed time
+      dino.y = 150;
+      dino.dy = 0;
+      dino.jumping = false;
+      isGameOver = false;
+      isGameStarted = false;
+      clearInterval(obstacleSpawnInterval);
+      clearInterval(strobeInterval); // Stop strobe effect
+      backgroundMusic.pause();
+      backgroundMusic.currentTime = 0;
+      document.body.style.backgroundColor = "#FFFFFF"; // Reset to white
+      canvas.style.backgroundColor = "#FFFFFF"; // Reset to white
+      gameOverScreen.classList.add("hidden");
+      titleScreen.classList.remove("hidden");
+      document.getElementById("score").textContent = "Score: 0";
+    }
+
+    function startGame() {
+      isGameStarted = true;
+      titleScreen.classList.add("hidden");
+      backgroundMusic.play();
+      gameLoop();
+      obstacleSpawnInterval = setInterval(() => {
+        if (!isGameOver) {
+          elapsedTime += 1.5; // Increment elapsed time (in seconds)
+          spawnObstacle();
+          gameSpeed += 0.2; // Gradually increase speed
+        }
+      }, 1500);
+    }
+
+    function spawnObstacle() {
+      const totalWeight = obstacleTypes.reduce((sum, type) => sum + type.weight, 0);
+      let random = Math.random() * totalWeight;
+
+      for (let i = 0; i < obstacleTypes.length; i++) {
+        // Skip massive wall until after 30 seconds
+        if (i === 3 && elapsedTime < 30) continue;
+
+        const type = obstacleTypes[i];
+        if (random < type.weight) {
+          // Ensure obstacles don’t spawn too close together
+          if (
+            obstacles.length === 0 ||
+            canvas.width - obstacles[obstacles.length - 1].x > 150
+          ) {
+            obstacles.push({
+              x: canvas.width,
+              y: canvas.height - type.height,
+              width: type.width,
+              height: type.height,
+              skin: obstacleImages[i], // Assign corresponding image
+            });
+          }
+          return;
+        }
+        random -= type.weight;
+      }
+    }
+
+    function checkCollision(rect1, rect2) {
+      return (
+        rect1.x < rect2.x + rect2.width &&
+        rect1.x + rect1.width > rect2.x &&
+        rect1.y < rect2.y + rect2.height &&
+        rect1.y + rect1.height > rect2.y
+      );
+    }
+
+    function startStrobe() {
+      clearInterval(strobeInterval);
+      strobeInterval = setInterval(() => {
+        const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
+        document.body.style.backgroundColor = randomColor;
+        canvas.style.backgroundColor = randomColor;
+      }, 100); // Change color every 100ms
+    }
+
+    function stopStrobe() {
+      clearInterval(strobeInterval);
+      const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
+      document.body.style.backgroundColor = randomColor; // Freeze a single color
+      canvas.style.backgroundColor = randomColor;
+    }
+
+    function gameLoop() {
+      if (isGameOver || !isGameStarted) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Update score
+      score++;
+      document.getElementById("score").textContent = `Score: ${score}`;
+
+      // Draw dino
+      ctx.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
+
+      // Apply gravity
+      if (dino.jumping) {
+        dino.dy += gravity;
+        dino.y += dino.dy;
+
+        if (dino.y >= canvas.height - dino.height) {
+          dino.y = canvas.height - dino.height;
+          dino.dy = 0;
+          dino.jumping = false;
+          stopStrobe(); // Stop strobe when grounded
+        }
+      }
+
+      // Update and draw obstacles
+      for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        obs.x -= gameSpeed;
+
+        if (obs.x + obs.width < 0) {
+          obstacles.splice(i, 1);
+          i--;
+        }
+
+        ctx.drawImage(obs.skin, obs.x, obs.y, obs.width, obs.height);
+
+        if (checkCollision(dino, obs)) {
+          isGameOver = true;
+          finalScore.textContent = score;
+          deathSound.play();
+          backgroundMusic.pause();
+          gameOverScreen.classList.remove("hidden");
+          return;
+        }
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space" || e.code === "ArrowUp") {
+        if (!isGameStarted) {
+          startGame();
+        } else if (!isGameOver && !dino.jumping) {
+          dino.jumping = true;
+          dino.dy = -10; // Jump strength
+          jumpSound.currentTime = 0;
+          jumpSound.play();
+          startStrobe(); // Start strobe while jumping
+        } else if (isGameOver) {
+          resetGame();
+        }
+      }
+    });
+
+    canvas.addEventListener("touchstart", () => {
+      if (!isGameStarted) {
+        startGame();
+      } else if (!isGameOver && !dino.jumping) {
+        dino.jumping = true;
+        dino.dy = -10;
+        jumpSound.currentTime = 0;
+        jumpSound.play();
+        startStrobe(); // Start strobe while jumping
+      } else if (isGameOver) {
+        resetGame();
+      }
+    });
+  </script>
+</body>
+</html>
