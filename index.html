@@ -7,20 +7,20 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      text-align: center;
       margin: 0;
       background-color: #FFFFFF;
-      overflow: hidden; /* Prevent scrolling on mobile */
+      transition: background-color 0.1s;
     }
     canvas {
       display: block;
-      margin: 0 auto;
+      margin: 20px auto;
       background: #FFFFFF;
       border: 1px solid #ccc;
+      transition: background-color 0.1s;
     }
-    #score {
-      text-align: center;
+    h1, #score {
       margin: 10px 0;
-      font-size: 24px;
     }
     .overlay {
       position: absolute;
@@ -54,7 +54,7 @@
     <p>(Tap the screen on mobile)</p>
   </div>
   <p id="score">Score: 0</p>
-  <canvas id="gameCanvas"></canvas>
+  <canvas id="gameCanvas" width="800" height="200"></canvas>
 
   <audio id="backgroundMusic" src="background-music.mp3" preload="auto" loop></audio>
   <audio id="jumpSound" src="jump.mp3" preload="auto"></audio>
@@ -64,7 +64,7 @@
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    const aspectRatio = 4; // 4:1 aspect ratio for the game
+    const gravity = 0.5;
     const dino = {
       x: 50,
       y: 150,
@@ -80,6 +80,7 @@
     let isGameOver = false;
     let isGameStarted = false;
     let obstacleSpawnInterval;
+    let elapsedTime = 0;
 
     const brightColors = ["#FF5733", "#FF8D1A", "#FFD700", "#33FF57", "#33FFF5", "#1A8DFF", "#FFC0CB"];
     const dinoImg = new Image();
@@ -107,22 +108,11 @@
     const gameOverScreen = document.getElementById("gameOverScreen");
     const finalScore = document.getElementById("finalScore");
 
-    function resizeCanvas() {
-      const width = Math.min(window.innerWidth, 800); // Max width of 800px
-      const height = width / aspectRatio; // Maintain aspect ratio
-      canvas.width = width;
-      canvas.height = height;
-
-      // Scale game elements proportionally
-      dino.width = canvas.width / 20;
-      dino.height = canvas.height / 6;
-      gameSpeed = canvas.width / 160;
-    }
-
     function resetGame() {
       obstacles.length = 0;
-      gameSpeed = 5; // Reset the initial speed
+      gameSpeed = 5;
       score = 0;
+      elapsedTime = 0;
       dino.y = 150;
       dino.dy = 0;
       dino.jumping = false;
@@ -143,10 +133,11 @@
       gameLoop();
       obstacleSpawnInterval = setInterval(() => {
         if (!isGameOver) {
+          elapsedTime += 1;
           spawnObstacle();
-          gameSpeed += 0.5; // Faster speed ramp-up
+          gameSpeed += 0.5; // Faster ramp-up
         }
-      }, 1000); // Spawn obstacles every 1 second for more intensity
+      }, 1000); // Spawn obstacles more frequently
     }
 
     function spawnObstacle() {
@@ -154,7 +145,6 @@
       let random = Math.random() * totalWeight;
 
       for (let i = 0; i < obstacleTypes.length; i++) {
-        const type = obstacleTypes[i];
         if (random < type.weight) {
           obstacles.push({
             x: canvas.width,
@@ -169,30 +159,18 @@
       }
     }
 
-    function checkCollision(rect1, rect2) {
-      return (
-        rect1.x < rect2.x + rect2.width &&
-        rect1.x + rect1.width > rect2.x &&
-        rect1.y < rect2.y + rect2.height &&
-        rect1.y + rect1.height > rect2.y
-      );
-    }
-
     function gameLoop() {
       if (isGameOver || !isGameStarted) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Update score
       score++;
       document.getElementById("score").textContent = `Score: ${score}`;
 
-      // Draw dino
       ctx.drawImage(dinoImg, dino.x, dino.y, dino.width, dino.height);
 
-      // Apply gravity
       if (dino.jumping) {
-        dino.dy += 0.5;
+        dino.dy += gravity;
         dino.y += dino.dy;
 
         if (dino.y >= canvas.height - dino.height) {
@@ -202,7 +180,6 @@
         }
       }
 
-      // Update and draw obstacles
       for (let i = 0; i < obstacles.length; i++) {
         const obs = obstacles[i];
         obs.x -= gameSpeed;
@@ -233,7 +210,7 @@
           startGame();
         } else if (!isGameOver && !dino.jumping) {
           dino.jumping = true;
-          dino.dy = -10; // Jump strength
+          dino.dy = -10;
           jumpSound.currentTime = 0;
           jumpSound.play();
         } else if (isGameOver) {
@@ -254,9 +231,6 @@
         resetGame();
       }
     });
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
   </script>
 </body>
 </html>
