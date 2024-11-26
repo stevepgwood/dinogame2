@@ -121,7 +121,7 @@
 
     function resetGame() {
       obstacles.length = 0;
-      gameSpeed = 5;
+      gameSpeed = 5; // Reset the initial speed
       score = 0;
       dino.y = 150;
       dino.dy = 0;
@@ -144,9 +144,9 @@
       obstacleSpawnInterval = setInterval(() => {
         if (!isGameOver) {
           spawnObstacle();
-          gameSpeed += 0.2; // Gradually increase speed
+          gameSpeed += 0.5; // Faster speed ramp-up
         }
-      }, 1500);
+      }, 1000); // Spawn obstacles every 1 second for more intensity
     }
 
     function spawnObstacle() {
