@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
   <title>Dino Jump Game</title>
   <style>
     body {
@@ -190,6 +191,37 @@ const cactusTypes = [
     const gameOverScreen = document.getElementById("gameOverScreen");
     const finalScore = document.getElementById("finalScore");
 
+function resizeCanvas() {
+    const canvasContainer = document.getElementById("canvasContainer");
+    const canvas = document.getElementById("gameCanvas");
+
+    // Dynamically set canvas size
+    canvas.width = Math.min(window.innerWidth * 0.9, 800); // 90% of window width, max 800px
+    canvas.height = canvas.width * 0.25; // Maintain aspect ratio (4:1)
+
+    // Adjust container size
+    canvasContainer.style.width = `${canvas.width}px`;
+    canvasContainer.style.height = `${canvas.height}px`;
+
+    // Update game elements for new canvas size
+    recalculateGameSizes();
+}
+
+function recalculateGameSizes() {
+    const canvas = document.getElementById("gameCanvas");
+
+    // Recalculate Dino and obstacle sizes
+    dino.width = canvas.width * 0.05; // Dino is 5% of canvas width
+    dino.height = dino.width * 1.25; // Maintain aspect ratio
+    dino.x = canvas.width * 0.1; // Dino's X position is 10% of canvas width
+
+    cactusTypes.forEach((type) => {
+        type.width = canvas.width * 0.05; // Cactus is 5% of canvas width
+        type.height = type.width * 1.5; // Maintain aspect ratio
+    });
+}
+
+
     function resetGame() {
       obstacles.length = 0;
       collectedLetters = [];
@@ -216,6 +248,11 @@ const cactusTypes = [
       titleScreen.classList.remove("hidden");
       gameOverScreen.classList.add("hidden");
     }
+
+// Resize canvas on page load and when the window is resized
+window.addEventListener("load", resizeCanvas);
+window.addEventListener("resize", resizeCanvas);
+
 
     function startGame() {
       isGameStarted = true;
@@ -416,19 +453,29 @@ display.innerHTML = letters.map((letter, index) => {
       requestAnimationFrame(gameLoop);
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (e.code === "Space" || e.code === "ArrowUp") {
-        if (!isGameStarted) {
-          startGame();
-        } else if (isGameOver) {
-          resetGame();
-        } else if (infiniteJumpMode || !dino.jumping) {
-          dino.jumping = true;
-          dino.dy = -10;
-          jumpSound.play();
-        }
-      }
-    });
+ document.addEventListener("keydown", handleInput);
+document.addEventListener("touchstart", handleInput); // Handle taps for mobile
+
+function handleInput(e) {
+    if (e.type === "keydown" && (e.code === "Space" || e.code === "ArrowUp")) {
+        processGameInput();
+    } else if (e.type === "touchstart") {
+        processGameInput();
+    }
+}
+
+function processGameInput() {
+    if (!isGameStarted) {
+        startGame();
+    } else if (isGameOver) {
+        resetGame();
+    } else if (infiniteJumpMode || !dino.jumping) {
+        dino.jumping = true;
+        dino.dy = -10; // Jump strength
+        jumpSound.play();
+    }
+}
+
   </script>
 </body>
 </html>
