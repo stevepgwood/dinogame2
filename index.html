@@ -21,24 +21,26 @@
       margin-left: auto;
       margin-right: auto;
     }
-    #canvasContainer {
-      display: inline-block;
-      width: 800px;
-      height: 200px;
-      padding: 30px;
-      background-image: url('your-border-image.png'); /* Replace with your border image */
-      background-size: 860px 260px;
-      background-repeat: no-repeat;
-      background-position: center;
-      box-sizing: content-box;
-    }
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background: #FFFFFF;
-      width: 800px;
-      height: 200px;
-    }
+  #canvasContainer {
+  position: relative;
+  width: 90%; /* Make the container responsive */
+  max-width: 800px; /* Limit maximum width to 800px for larger screens */
+  aspect-ratio: 4 / 1; /* Maintain the aspect ratio */
+  margin: 0 auto;
+  background-image: url('your-border-image.png'); /* Replace with your border image */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%; /* Ensure canvas scales with the container */
+  height: 100%;
+}
+
     #score {
       position: absolute;
       top: 20px;
@@ -118,6 +120,28 @@ display: inline-block; /* Each letter is styled individually */
   <script>
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+  const canvasContainer = document.getElementById("canvasContainer");
+  canvas.width = canvasContainer.clientWidth;
+  canvas.height = canvasContainer.clientHeight;
+
+  // Adjust game element sizes dynamically
+  recalculateGameSizes();
+}
+
+function recalculateGameSizes() {
+  // Update Dino and obstacle sizes relative to the canvas size
+  dino.width = canvas.width * 0.05; // Dino is 5% of the canvas width
+  dino.height = dino.width * 1.25; // Maintain Dino's aspect ratio
+  dino.x = canvas.width * 0.1; // Dino's X position is 10% of canvas width
+
+  cactusTypes.forEach((type) => {
+    type.width = canvas.width * 0.05; // Cactus width is 5% of canvas width
+    type.height = type.width * 1.5; // Maintain aspect ratio
+  });
+}
+
 
     const gravity = 0.5;
     const lowGravity = 0.2;
