@@ -22,13 +22,13 @@
       margin-right: auto;
     }
 
-   #canvasWrapper {
+    #canvasWrapper {
   position: relative;
   display: inline-block;
-  width: 95vw; /* Responsive width that scales with the screen size */
-  height: calc(95vw / 4); /* Maintain the aspect ratio of the border */
-  z-index: 1;
-  background-image: url('your-border-image.png');
+  width: 860px; /* This is the border size */
+  height: 260px; /* This is the border size */
+  z-index: 1; /* Keep it below everything else, but above the body */
+  background-image: url('your-border-image.png'); /* Replace with your border image */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -395,31 +395,19 @@ const cactus1Frames = [
 
 function resizeCanvas() {
     const canvasContainer = document.getElementById("canvasContainer");
-    const canvasWrapper = document.getElementById("canvasWrapper");
     const canvas = document.getElementById("gameCanvas");
 
-    // Calculate the ideal width based on viewport width, but max out at 800px
-    let containerWidth = Math.min(window.innerWidth * 0.95, 800);
-    let containerHeight = containerWidth / 4; // Maintain a 4:1 aspect ratio
+    // Dynamically set canvas size
+    canvas.width = Math.min(window.innerWidth * 0.9, 800); // 90% of window width, max 800px
+    canvas.height = canvas.width * 0.25; // Maintain aspect ratio (4:1)
 
-    // Apply the dimensions to the canvas and its container
-    canvasWrapper.style.width = `${containerWidth}px`;
-    canvasWrapper.style.height = `${containerHeight}px`;
-
-    canvasContainer.style.width = `${containerWidth}px`;
-    canvasContainer.style.height = `${containerHeight}px`;
-
-    canvas.width = containerWidth;
-    canvas.height = containerHeight;
+    // Adjust container size
+    canvasContainer.style.width = `${canvas.width}px`;
+    canvasContainer.style.height = `${canvas.height}px`;
 
     // Update game elements for new canvas size
     recalculateGameSizes();
 }
-
-// Call the resize function on page load and when the window is resized
-window.addEventListener("load", resizeCanvas);
-window.addEventListener("resize", resizeCanvas);
-
 
 // Animate the press start image between two frames
 let isFrame1 = true; // Track which frame is currently being shown
