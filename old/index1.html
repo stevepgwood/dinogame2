@@ -4,102 +4,59 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-  <title>PLUR</title>
+  <title>Dino Jump Game</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
       background-color: #FFFFFF;
       transition: background-color 0.1s;
-      
     }
     #logo {
       margin-top: 20px;
-      width: 15%;
+      width: 200px;
       height: auto;
       display: block;
       margin-left: auto;
       margin-right: auto;
     }
-
-    #canvasWrapper {
-  position: relative;
+ #canvasContainer {
   display: inline-block;
-  width: 860px; /* This is the border size */
-  height: 260px; /* This is the border size */
-  z-index: 1; /* Keep it below everything else, but above the body */
-  background-image: url('your-border-image.png'); /* Replace with your border image */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  box-sizing: border-box;
-}
-  #canvasContainer {
-  position: relative; /* Allow absolute positioning of children like strobeOverlay */
-  display: inline-block;
-   top: 30px; /* Align it to the exact position inside the wrapper */
-  width: 800px;
-  height: 200px;
+  width: 860px;   /* Set to 860px for the expanded UI frame */
+  height: 860px;  /* Set to 860px for the expanded UI frame */
+  padding: 0px;  /* You can adjust padding as needed for spacing */
   background-image: url('your-border-image.png'); /* Replace with your border image */
   z-index: 2; /* Ensure it stays above the canvas */
-  background-size: 860px 260px;
+  background-size: cover; /* Adjust to fit the new frame */
   background-repeat: no-repeat;
   background-position: center;
   box-sizing: content-box;
-  overflow: hidden; /* Ensure anything overflowing is hidden */
+  position: relative; /* Position relative to allow positioning of children within it */
 }
-
-#strobeOverlay {
-  position: absolute;
-  width: 800px; /* Explicitly match the canvas size */
-  height: 200px; /* Explicitly match the canvas size */
-  top: 0;
-  left: 0;
-  z-index: 3; /* Make sure it sits above the canvas */
-  pointer-events: none; /* Allow interactions with the canvas underneath */
-  background-image: url('your-strobe-image.png'); /* Replace with your strobe image */
-  background-size: cover;
-  background-repeat: no-repeat; /* Make sure it's not repeating */
-  opacity: 0.9; /* Adjust as needed */
-}
-
-
-
-
-
 
     canvas {
       display: block;
       margin: 0 auto;
       background: #FFFFFF;
-      width: 800px;
-      height: 200px;
+      width: 860px;
+      height: 260px;
     }
     #score {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-family: Impact ;
-      font-size: 24px;
-      color: #000;
-    }
-    #collectedLetters {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      color: #000;
-    }
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  color: #000;
+}
+
+#collectedLetters {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: #000;
+}
 
 .plur-item {
     display: inline-block; /* Keep consistent spacing */
@@ -111,22 +68,23 @@
     margin: 0 5px; /* Space between characters */
 }
 
-#PLURDisplay span {
+#PLURDisplay {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 48px;
   font-weight: bold;
-  text-align: center;
-  margin-top: 20px;
-  letter-spacing: 20px; /* Space out the letters */
-display: inline-block; /* Each letter is styled individually */
+  letter-spacing: 20px;
 }
 
 #spiralLogo {
-    margin-top: 40px; /* Space between PLUR display and the logo */
-    width: 100px; /* Adjust as needed */
-    height: auto; /* Maintain aspect ratio */
-    display: block; /* Center the image */
-    margin-left: auto;
-    margin-right: auto;
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: auto;
 }
 
 
@@ -135,8 +93,6 @@ display: inline-block; /* Each letter is styled individually */
     color: #FFD700; /* Gold text */
     font-weight: bold;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    font-family: 'Courier New', Courier, monospace;
-    
 }
 
 
@@ -173,18 +129,10 @@ display: inline-block; /* Each letter is styled individually */
   <div id="score">Score: 0</div>
   <div id="collectedLetters">PLUR: 1x</div>
 
-
- <!-- Canvas and Border Wrapper -->
-<div id="canvasWrapper">
-  <!-- Canvas Container -->
+  <!-- Border container with the canvas inside -->
   <div id="canvasContainer">
-    <!-- Game Canvas -->
     <canvas id="gameCanvas" width="800" height="200"></canvas>
-
-    <!-- Strobe Overlay -->
-    <div id="strobeOverlay" style="display: none;"></div>
   </div>
-</div>
 
 <div id="PLURDisplay">_ _ _ _</div>
 <img id="spiralLogo" src="your-spiral-logo.png" alt="Spiral Logo">
@@ -192,17 +140,18 @@ display: inline-block; /* Each letter is styled individually */
 
 
   <div id="titleScreen" class="overlay">
-    <img id="pressStartImage" src="press-start-frame1.png"  style="width: 50%; height: 50%; max-width: 200px; height: auto;">
+    <p>Press Spacebar to Start</p>
+    <p>(Tap the screen on mobile)</p>
   
 <div id="leaderboard" style="margin-top: 20px; font-size: 18px; color: white;"></div>
 
 </div>
 
 <div id="gameOverScreen" class="overlay hidden">
-  <img id="gameOverImage" src="game-over-image.png" alt="Game Over" style="width: 100%; max-width: 400px; height: auto;">
-  <p class="leaderboard">Your final score: <span id="finalScore">0</span></p> 
-    <img id="pressStartImage" src="press-start-frame1.png"  style="width: 50%; height: 50%; max-width: 200px; height: auto;">
-
+    <p>Game Over!</p>
+    <p>Your final score: <span id="finalScore">0</span></p>
+    <p>Press Spacebar to Restart</p>
+    <p>(Tap the screen on mobile)</p>
     <input 
       id="nameInput" 
       type="text" 
@@ -265,21 +214,13 @@ let rainbowOffset = 0;
 
 
 
-    const lowGravity = 0.10;
-    const initialGravity = 0.7; // Your base gravity
-const initialGameSpeed = 5; // Starting speed of the game
-let gravity = initialGravity; // Variable gravity to adjust if needed
-
-    const BASE_JUMP_STRENGTH = -12; // Base vertical jump strength
-    let adjustedJumpStrength = BASE_JUMP_STRENGTH; // Variable jump strength that will change over time
-const SPEED_SCALING_FACTOR = 2.8; // Adjust this value to control the scaling effect
-const GRAVITY_SCALING_FACTOR = 0.25; // Controls how much gravity decreases as game speed increases
-
-    const dino = {
+    const gravity = 0.5;
+    const lowGravity = 0.15;
+ const dino = {
     x: 50,
-    y: canvas.height - 55,
+    y: 150,
     width: 30,
-    height: 60,
+    height: 55,
     dy: 0,
     jumping: false,
     jumpStartY: null, // Track starting Y position when jumping
@@ -309,8 +250,6 @@ const cactusTypes = [
     const letters = ['P', 'L', 'U', 'R'];
     let collectedLetters = [];
 
-
-    
 // Initialize PLUR Display
 function initializePLURDisplay() {
     const display = document.getElementById("PLURDisplay");
@@ -374,15 +313,6 @@ function getRainbowColor(index, offset = 0) {
   return img;
 });
 
-const cactus1Frames = [
-  "cactus1-frame1.png",  // Replace with your first cactus1 frame
-  "cactus1-frame2.png"   // Replace with your second cactus1 frame
-].map((src) => {
-  const img = new Image();
-  img.src = src;
-  return img;
-});
-
 
     const obstacleImages = [
       "cactus1.png",
@@ -405,31 +335,29 @@ const cactus1Frames = [
 
 
 
-    function resizeCanvas() {
+function resizeCanvas() {
     const canvasContainer = document.getElementById("canvasContainer");
     const canvas = document.getElementById("gameCanvas");
 
-    // Get the screen width and calculate based on a responsive aspect ratio
-    const containerWidth = Math.min(window.innerWidth * 0.95, 800); // 95% of window width, with a max of 800px
-    const containerHeight = containerWidth * 0.25; // Maintain aspect ratio (4:1)
+    // Dynamically set canvas size
+    canvas.width = Math.min(window.innerWidth * 0.9, 800); // 90% of window width, max 800px
+    canvas.height = canvas.width * 0.25; // Maintain aspect ratio (4:1)
 
-    // Set canvas width and height
-    canvas.width = containerWidth;
-    canvas.height = containerHeight;
+    // Adjust container size
+    canvasContainer.style.width = `${canvas.width}px`;
+    canvasContainer.style.height = `${canvas.height}px`;
 
-    // Update game elements to match the new canvas size
+    // Update game elements for new canvas size
     recalculateGameSizes();
 }
 
 function recalculateGameSizes() {
-    const canvas = document.getElementById("gameCanvas");
-
     // Update Dino size relative to the canvas size
     dino.width = canvas.width * 0.05; // Dino is 5% of the canvas width
-    dino.height = canvas.height * 0.3; // Dino height adjusted accordingly
+    dino.height = dino.width * 1.25; // Maintain Dino's aspect ratio
     dino.x = canvas.width * 0.1; // Dino's X position is 10% of canvas width
 
-    // Adjust each cactus size proportionally based on canvas width
+    // Adjust each cactus size proportionally based on its initial size
     cactusTypes.forEach((type) => {
         const scaleFactor = canvas.width / 800; // Scale proportionally to the default canvas width
         type.width = type.width * scaleFactor;
@@ -437,46 +365,19 @@ function recalculateGameSizes() {
     });
 }
 
-// Ensure canvas resizes correctly on page load and window resize
-window.addEventListener("load", resizeCanvas);
-window.addEventListener("resize", resizeCanvas);
-
-
-// Animate the press start image between two frames
-let isFrame1 = true; // Track which frame is currently being shown
-
-function animatePressStartImage() {
-    const pressStartImage = document.getElementById("pressStartImage");
-
-    if (isFrame1) {
-        pressStartImage.src = "press-start-frame2.png";
-    } else {
-        pressStartImage.src = "press-start-frame1.png";
-    }
-    
-    isFrame1 = !isFrame1; // Toggle between the two frames
-}
-
-// Start the animation loop
-setInterval(animatePressStartImage, 500); // Change frame every 1 second
-
-
-
-
 function resetGame() {
     console.log("Resetting game...");
 
     // Reset all variables
     obstacles.length = 0; // Clear existing obstacles
     collectedLetters = [];
+    initializePLURDisplay();
     nextLetterIndex = 0;
     currentLetter = null;
-    plurMultiplier = 1; // Reset multiplier to default
-
-    initializePLURDisplay();
     infiniteJumpMode = false;
     gameSpeed = 5; // Reset speed
     score = 0; // Reset score
+    plurMultiplier = 1;
     dino.y = 150; // Reset Dino position
     dino.dy = 0; // Reset Dino velocity
     dino.jumping = false;
@@ -486,14 +387,6 @@ function resetGame() {
     isGameOver = false;
     isGameStarted = false;
     lastObstacleX = 0; // Reset the obstacle position tracker
-
-       // ** Update Dino's y position to align with the ground **
-       dino.y = canvas.height - dino.height; // Ensure Dino is on the ground level
-
-    restartPLURCycle(); // Reset PLUR state during game reset.
-    
-    // Spawn the first letter after reset to ensure letters are available
-    spawnNextLetter();
 
     // Clear intervals
     if (obstacleSpawnInterval) {
@@ -511,7 +404,7 @@ function resetGame() {
     // Reset UI
     document.getElementById("score").textContent = "Score: 0";
     document.getElementById("collectedLetters").textContent = "PLUR: 1x";
-    updatePLURDisplay(); // Reset PLUR display to show "_ _ _ _"
+    document.getElementById("PLURDisplay").textContent = "_ _ _ _";
 
     nameInput.value = ""; // Clear input field
     nameInput.style.display = "none"; // Hide input
@@ -527,8 +420,6 @@ function resetGame() {
     console.log("Resetting game and restarting obstacle spawning.");
     adjustObstacleSpawnInterval();
 }
-
-
 
 
 
@@ -561,8 +452,8 @@ function adjustObstacleSpawnInterval() {
         obstacleSpawnInterval = null;
     }
 
-    const minInterval = 700; // Minimum spawn interval (closer obstacles)
-    const maxInterval = 1300; // Maximum spawn interval (spread out obstacles)
+    const minInterval = 400; // Minimum spawn interval (closer obstacles)
+    const maxInterval = 1000; // Maximum spawn interval (spread out obstacles)
     const interval = Math.random() * (maxInterval - minInterval) + minInterval;
 
     // Spawn the first obstacle immediately
@@ -583,7 +474,7 @@ function adjustObstacleSpawnInterval() {
 
  let lastObstacleX = 0; // Track the X-position of the last obstacle
 
- function spawnObstacle() {
+function spawnObstacle() {
     console.log("Spawning obstacle. Last obstacle X:", lastObstacleX);
 
     const totalWeight = cactusTypes.reduce((sum, type) => sum + type.weight, 0);
@@ -599,7 +490,7 @@ function adjustObstacleSpawnInterval() {
     }
 
     const minGap = Math.max(canvas.width / gameSpeed * 1.5, 200); // Ensure minimum gap of 200px
-    const maxGap = minGap * 1.5; // Add slight randomization to spacing
+    const maxGap = minGap * 1.2; // Add slight randomization to spacing
     const spawnX = Math.max(lastObstacleX + minGap, canvas.width) + Math.random() * (maxGap - minGap);
 
     obstacles.push({
@@ -608,9 +499,8 @@ function adjustObstacleSpawnInterval() {
         width: chosenType.width,
         height: chosenType.height,
         skin: obstacleImages[cactusTypes.indexOf(chosenType)],
-        isCactus1: chosenType === cactusTypes[0], // Mark if it's cactus1
-        frame: 0,                   // Add a frame property for animation
-        lastFrameTime: 0            // Add a time property to track animation frames
+isCactus1: chosenType === cactusTypes[0], // Mark if it's cactus1
+
     });
 
     lastObstacleX = spawnX; // Update the last obstacle position
@@ -621,49 +511,28 @@ function adjustObstacleSpawnInterval() {
 
 
 
-
-function spawnNextLetter() {
-    if (nextLetterIndex < letters.length) {
+    function spawnNextLetter() {
+      if (nextLetterIndex < letters.length) {
         currentLetter = {
-            x: canvas.width, // Start off-screen
-            y: Math.random() * (canvas.height - 80) + 40, // Random Y position
-            width: 30,
-            height: 30,
-            value: letters[nextLetterIndex],
+          x: canvas.width,
+          y: Math.random() * (canvas.height - 80) + 40,
+          width: 30,
+          height: 30,
+          value: letters[nextLetterIndex],
         };
-        console.log(`Spawning letter: ${letters[nextLetterIndex]}`); // Debugging output
-    } else {
-        console.log("All letters collected. Setting currentLetter to null.");
+      } else {
         currentLetter = null;
+      }
     }
-}
-
-let strobeLightsActive = false; // New flag to track strobe light status
 
 function activateInfiniteJumpMode() {
     infiniteJumpMode = true;
-    strobeLightsActive = true; // Strobe lights are active
     dino.jumping = false; // Reset jumping state during infinite jump
     dino.dy = -5; // Give Dino a small boost upwards to start infinite mode
-    const lowGravity = 0.10; // Low gravity value to use during strobe light
-    const strobeDuration = 10000; // Duration of strobe lights (infinite jump mode)
+    const strobeDuration = 10000; // Duration of strobe lights
     const additionalDuration = 2000; // Extra time for low gravity mode
 
-    // Strobe overlay flashing for 1 second
-    const strobeOverlay = document.getElementById("strobeOverlay");
-    let strobeCount = 0;
-    const flashInterval = setInterval(() => {
-        strobeOverlay.style.display = (strobeOverlay.style.display === "none" ? "block" : "none");
-        strobeCount++;
-
-        // Stop flashing after 1 second (10 flashes if 100ms interval)
-        if (strobeCount >= 10) {
-            clearInterval(flashInterval);
-            strobeOverlay.style.display = "none"; // Ensure it ends hidden
-        }
-    }, 100); // Flash every 100ms
-
-    // Strobe background effect (background color strobing)
+    // Strobe effect
     strobeInterval = setInterval(() => {
         const randomColor = brightColors[Math.floor(Math.random() * brightColors.length)];
         document.body.style.backgroundColor = randomColor;
@@ -675,20 +544,15 @@ function activateInfiniteJumpMode() {
         clearInterval(strobeInterval); // Stop strobe lights
         document.body.style.backgroundColor = "#FFFFFF";
         canvas.style.backgroundColor = "#FFFFFF";
-        strobeLightsActive = false; // Strobe lights are no longer active
 
-        // Switch to only infinite jump without bounce for the additional duration
-        dino.dy = 0; // Stop the bouncing effect during the additional duration
-
-
-       
-
-        // End inf jump effect after additional duration
+        // End low gravity effect after additional duration
         setTimeout(() => {
             infiniteJumpMode = false; // End infinite jump mode
+            resetDinoState(); // Ensure everything resets properly
 
             // Ensure gravity is applied if the Dino is in the air
             if (dino.y <= 0) {
+                dino.y = 0; // Snap Dino back if it's above the screen
                 dino.dy = gravity; // Force downward movement
             } else if (dino.y < canvas.height - dino.height) {
                 dino.dy = gravity; // Make sure the Dino falls correctly
@@ -698,7 +562,6 @@ function activateInfiniteJumpMode() {
         }, additionalDuration);
     }, strobeDuration);
 
-
     plurMultiplier *= 2; // Increase PLUR multiplier
     document.getElementById("collectedLetters").textContent = `PLUR: ${plurMultiplier}x`;
 }
@@ -706,30 +569,15 @@ function activateInfiniteJumpMode() {
 
 
 
-
-
-function restartPLURCycle() {
-    console.log("Restarting PLUR cycle...");
-    collectedLetters = [];  // Clear collected letters
-    nextLetterIndex = 0;    // Reset the index
-    currentLetter = null;   // Clear the current letter state
-    plurMultiplier = 1;     // Resetting the multiplier back to default
-
-    // Reset the UI elements
-    document.getElementById("collectedLetters").textContent = `PLUR: ${plurMultiplier}x`;
-
-    // Reinitialize the display and spawn the next letter
-    updatePLURDisplay();    // Update the visual display back to "_ _ _ _"
-    spawnNextLetter();      // Restart spawning letters
-}
-
-
-
-
+    function restartPLURCycle() {
+      collectedLetters = [];
+      nextLetterIndex = 0;
+      spawnNextLetter();
+    }
 
  function checkCollision(rect1, rect2) {
     // Add padding to tighten the hitbox
-    const hitboxPadding = 10; // Adjust this value to shrink the hitbox
+    const hitboxPadding = 5; // Adjust this value to shrink the hitbox
 
     return (
         rect1.x + hitboxPadding < rect2.x + rect2.width && // Left side
@@ -744,9 +592,6 @@ function restartPLURCycle() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    gravity = initialGravity * (gameSpeed / initialGameSpeed);
-adjustedJumpStrength = BASE_JUMP_STRENGTH * Math.pow(gameSpeed / initialGameSpeed, 0.5);
-
     // Update dash cooldown
     if (dino.dashCooldown > 0) {
         dino.dashCooldown--;
@@ -756,7 +601,7 @@ adjustedJumpStrength = BASE_JUMP_STRENGTH * Math.pow(gameSpeed / initialGameSpee
     let effectiveGameSpeed = gameSpeed;
 
     if (dino.dashing) {
-        effectiveGameSpeed = gameSpeed + 7; // Temporarily increase speed for the dash
+        effectiveGameSpeed = gameSpeed * 2; // Temporarily increase speed for the dash
         dino.dashDuration--;
 
         if (dino.dashDuration <= 0) {
@@ -787,26 +632,18 @@ if (infiniteJumpMode) {
     // Prevent Dino from exceeding the canvas bounds
     if (dino.y + dino.height >= canvas.height) {
         dino.y = canvas.height - dino.height;
-        if (strobeLightsActive) {
-                // Apply a slight upwards force to keep floating effect while strobe lights are active
-                dino.dy = -6; 
-            } else {
-                // Stop bouncing after strobe lights are no longer active
-                dino.dy = 0; 
-            }
-        } else if (dino.y <= 0) {
-            dino.y = 0;
-            dino.dy = gravity; // Force it to start falling down immediately if it reaches the top
-        }
-
+        dino.dy = -2; // Slight upwards force to keep floating effect
+    } else if (dino.y <= 0) {
+        dino.y = 0;
+        dino.dy = gravity; // Force it to start falling down immediately
+    }
     dino.goingUp = dino.dy < 0; // Track upward movement
     dino.fallingTime = 0; // Reset falling time while in infinite jump mode
 
-  } else if (dino.jumping || dino.y < canvas.height - dino.height) {
+} else if (dino.jumping || dino.y < canvas.height - dino.height) {
     // Gravity affects the Dino if it's in the air
-dino.dy += gravity; // Apply adjusted gravity
+    dino.dy += gravity;
     dino.y += dino.dy;
-
 
     // Update the falling time
     if (dino.dy < 0) {
@@ -841,105 +678,89 @@ dino.dy += gravity; // Apply adjusted gravity
     // Draw the Dino
     ctx.drawImage(dinoFrames[dino.frame], dino.x, dino.y, dino.width, dino.height);
 
-  // Obstacles logic
-for (let i = 0; i < obstacles.length; i++) {
-    const obs = obstacles[i];
-    obs.x -= effectiveGameSpeed * (obs.isCactus1 ? 1.07 : 1);
+    // Obstacles logic
+    for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        obs.x -= effectiveGameSpeed * (obs.isCactus1 ? 1.05 : 1);
 
-    // Animate cactus1 if applicable
-    if (obs.isCactus1) {
-        const currentTime = performance.now();
-        if (currentTime - obs.lastFrameTime > dino.frameDelay) {
-            obs.frame = (obs.frame + 1) % cactus1Frames.length; // Cycle through frames
-            obs.lastFrameTime = currentTime; // Update last frame time
+        // Remove obstacles that are out of view
+        if (obs.x + obs.width < 0) {
+            obstacles.splice(i, 1);
+            i--;
         }
-        ctx.drawImage(
-            cactus1Frames[obs.frame],
-            obs.x,
-            obs.y,
-            obs.width,
-            obs.height
-        );
-    } else {
-        // Draw other obstacles (non-animated)
+
+        // Draw the obstacle
         ctx.drawImage(obs.skin, obs.x, obs.y, obs.width, obs.height);
+
+        // Check collision with Dino
+        if (checkCollision(dino, obs)) {
+            isGameOver = true;
+            deathSound.play();
+            backgroundMusic.pause();
+
+            // Flash background red multiple times (existing code)
+            let flashes = 3;
+            let isRed = false;
+            const flashInterval = setInterval(() => {
+                document.body.style.backgroundColor = isRed ? "#FFFFFF" : "red";
+                isRed = !isRed;
+
+                flashes--;
+                if (flashes <= 0) {
+                    clearInterval(flashInterval);
+                    document.body.style.backgroundColor = "#FFFFFF";
+                }
+            }, 200);
+
+            gameOverScreen.classList.remove("hidden");
+            finalScore.textContent = score;
+
+            nameInput.value = "";
+            nameInput.style.display = "block";
+            submitButton.style.display = "block";
+            nameInput.focus();
+        }
     }
 
-    // Remove obstacles that are out of view
-    if (obs.x + obs.width < 0) {
-        obstacles.splice(i, 1);
-        i--;
-    }
+    // Letters logic
+    if (currentLetter) {
+        currentLetter.x -= effectiveGameSpeed;
+        const randomColor = getRandomBrightColor();
+        ctx.font = "bold 30px Arial";
+        ctx.fillStyle = randomColor;
+        ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+        ctx.shadowBlur = 10;
+        const textWidth = ctx.measureText(currentLetter.value).width;
+        ctx.fillText(
+            currentLetter.value,
+            currentLetter.x - textWidth / 2,
+            currentLetter.y + currentLetter.height / 2
+        );
+        ctx.shadowBlur = 0;
 
-    // Check collision with Dino
-    if (checkCollision(dino, obs)) {
-        isGameOver = true;
-        deathSound.play();
-        backgroundMusic.pause();
-
-        // Flash background red multiple times (existing code)
-        let flashes = 6;
-        let isRed = false;
-        const flashInterval = setInterval(() => {
-            document.body.style.backgroundColor = isRed ? "#FFFFFF" : "red";
-            isRed = !isRed;
-
-            flashes--;
-            if (flashes <= 0) {
-                clearInterval(flashInterval);
-                document.body.style.backgroundColor = "#FFFFFF";
-            }
-        }, 200);
-
-        gameOverScreen.classList.remove("hidden");
-        finalScore.textContent = score;
-
-        nameInput.value = "";
-        nameInput.style.display = "block";
-        submitButton.style.display = "block";
-        nameInput.focus();
-    }
-}
-
-
-  // Letters logic
-if (currentLetter) {
-    currentLetter.x -= effectiveGameSpeed;
-    const randomColor = getRandomBrightColor();
-    ctx.font = "bold 30px Arial";
-    ctx.fillStyle = randomColor;
-    ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
-    ctx.shadowBlur = 10;
-    const textWidth = ctx.measureText(currentLetter.value).width;
-    ctx.fillText(
-        currentLetter.value,
-        currentLetter.x - textWidth / 2,
-        currentLetter.y + currentLetter.height / 2
-    );
-    ctx.shadowBlur = 0;
-
-    if (currentLetter.x + currentLetter.width < 0) {
-      console.log("Letter went off-screen. Spawning new letter...");
-        spawnNextLetter();
-    }
-
-    if (checkCollision(dino, currentLetter)) {
-        collectedLetters.push(currentLetter.value);
-        nextLetterIndex++;
-
-        if (nextLetterIndex < letters.length) {
-            const letterGrabSound = document.getElementById("letterGrabSound");
-            letterGrabSound.play();
-        } else if (nextLetterIndex === letters.length) {
-            const specialLetterGrabSound = document.getElementById("specialLetterGrabSound");
-            specialLetterGrabSound.play();
-            activateInfiniteJumpMode(); // Trigger infinite jump when all letters are collected
+        if (currentLetter.x + currentLetter.width < 0) {
+            spawnNextLetter();
         }
 
-        updatePLURDisplay();
-        spawnNextLetter(); // Spawn the next letter after collection
+        if (checkCollision(dino, currentLetter)) {
+            collectedLetters.push(currentLetter.value);
+            nextLetterIndex++;
+
+            if (nextLetterIndex < 4) {
+                const letterGrabSound = document.getElementById("letterGrabSound");
+                letterGrabSound.play();
+            } else if (nextLetterIndex === 4) {
+                const specialLetterGrabSound = document.getElementById("specialLetterGrabSound");
+                specialLetterGrabSound.play();
+            }
+
+            updatePLURDisplay();
+            spawnNextLetter();
+            if (collectedLetters.length === letters.length) {
+                activateInfiniteJumpMode();
+            }
+        }
     }
-}
 
     // Update score
     score += plurMultiplier;
@@ -966,23 +787,19 @@ function processGameInput() {
         startGame();
     } else if (isGameOver) {
         resetGame();
-      } else if (!dino.jumping || infiniteJumpMode) {
+    } else if (!dino.jumping || infiniteJumpMode) {
         // Start a new jump
         dino.jumping = true;
-        dino.dy = adjustedJumpStrength 
-
-
+        dino.dy = -9.5; // Jump strength
         dino.jumpStartY = dino.y; // Set the start height of the jump
         jumpSound.play();
-
-
-    } else if (dino.jumping && dino.y >= canvas.height - dino.height - 20 && dino.dy > 0) {
+    } else if (dino.jumping && dino.y >= canvas.height - dino.height - 10 && dino.dy > 0) {
         // Trigger a new jump just before landing (buffer zone of 10px and still falling down)
         dino.jumping = true;
-        dino.dy = -12; // Jump strength
+        dino.dy = -10; // Jump strength
         dino.jumpStartY = dino.y; // Set the start height again for the next jump
         jumpSound.play();
-    } else if ((dino.goingUp || dino.fallingTime <= 5) && dino.dashCooldown <= 0 && !dino.dashing) {
+    } else if ((dino.goingUp || dino.fallingTime <= 50) && dino.dashCooldown <= 0 && !dino.dashing) {
         // Allow dash when moving up or within a short time (15 frames) of falling
         dino.dashing = true;
         dino.dashDuration = 15; // Dash lasts for 15 frames (adjust as needed)
